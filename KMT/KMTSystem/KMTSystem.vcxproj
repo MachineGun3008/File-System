@@ -22,32 +22,32 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{C9285CB7-CCE0-47B5-B681-6B69C5079E88}</ProjectGuid>
     <RootNamespace>KMTSystem</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -115,14 +115,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AttributeHeader.h" />
     <ClInclude Include="BitMap.h" />
     <ClInclude Include="BootSector.h" />
+    <ClInclude Include="Data.h" />
+    <ClInclude Include="DataRun.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="FileInfo.h" />
+    <ClInclude Include="Header.h" />
+    <ClInclude Include="Index.h" />
     <ClInclude Include="RecordHeader.h" />
+    <ClInclude Include="Security.h" />
+    <ClInclude Include="Volume.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AttributeHeader.cpp" />
     <ClCompile Include="BitMap.cpp" />
     <ClCompile Include="BootSector.cpp" />
+    <ClCompile Include="Conversion.cpp" />
+    <ClCompile Include="Data.cpp" />
+    <ClCompile Include="DataRun.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="FileInfo.cpp" />
+    <ClCompile Include="Index.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="RecordHeader.cpp" />
+    <ClCompile Include="Security.cpp" />
+    <ClCompile Include="Volume.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

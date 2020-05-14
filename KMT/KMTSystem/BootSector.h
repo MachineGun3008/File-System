@@ -1,10 +1,8 @@
 #pragma once
 #ifndef _BOOTSECTOR_
 #define _BOOTSECTOR_
-#include<iostream>
-#include<string>
+#include "Header.h"
 
-using namespace std;
 class BootSector
 {
 public:

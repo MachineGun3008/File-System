@@ -1,9 +1,7 @@
 #pragma once
 #ifndef _BITMAP_
 #define _BITMAP_
-#include<iostream>
-#include<vector>
-using namespace std;
+#include "Header.h"
 
 class BitMap
 {

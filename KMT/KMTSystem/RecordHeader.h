@@ -1,8 +1,8 @@
 #pragma once
-#ifndef _RECORDHEADER_
-#define _RECORDHEADER_
-#include<iostream>
-using namespace std;
+#ifndef _RecordHeader_
+#define _RecordHeader_
+#include "Header.h"
+
 class RecordHeader
 {
 public:
