@@ -3,9 +3,8 @@
 int main()
 {
 	Volume f;
-	f.CreateVol("D:\\test.kmt", 1);
-	f.AddFile();
-
+	f.CreateVol("D:\\test.bin", 1);
+	f.closevol();
 
 	system("pause");
 	return 0;

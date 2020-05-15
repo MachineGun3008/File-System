@@ -25,3 +25,18 @@ uint64_t BootSector::getTotalCluster()
 {
 	return Total_Cluster;
 }
+void BootSector::read(fstream &Vol)
+{
+	Vol.seekg(ios_base::beg);
+	Vol.seekg(8);
+	Vol.read((char *)&Byte_Per_Sector, sizeof(Byte_Per_Sector));
+	Vol.read((char *)&Sector_Per_Cluster, sizeof(Sector_Per_Cluster));
+	Vol.read((char *)&Total_Sector, sizeof(Total_Sector));
+	Vol.read((char *)&Sector_Begin_Of_CM, sizeof(Sector_Begin_Of_CM));
+	Vol.read((char *)&Sector_Begin_RDET, sizeof(Sector_Begin_RDET));
+	Total_Cluster = Total_Sector / Sector_Per_Cluster;
+}
+uint32_t BootSector::getBeginOfCM()
+{
+	return Sector_Begin_Of_CM;
+}

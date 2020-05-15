@@ -8,6 +8,8 @@ class BootSector
 public:
 	void createBootSector(uint64_t size_of_vol);
 	void write(fstream &Vol);
+	void read(fstream &Vol);
+	uint32_t getBeginOfCM();
 	uint64_t getTotalCluster();
 private:
 	const string label = " AKCMTT ";
