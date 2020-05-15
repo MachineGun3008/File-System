@@ -43,11 +43,18 @@ FileInfo::FileInfo(ifstream& in, string path)
         temp.push_back(path[i]);
     for (int i = temp.length()-1; i >= 0; i--)
         Name.push_back(temp[i]);
+    
+    NameLength = Name.length()*8;
 
-    //not yet
-    BaseEntry = 0;
-    NameLength = 0;
+    uint64_t x = 0;
+    setBase(x);
+
     Offset = 0;
+}
+
+void FileInfo::setBase(uint64_t base)
+{
+    BaseEntry = base;
 }
 
 void FileInfo::displayInfo()

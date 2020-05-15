@@ -19,6 +19,7 @@ public:
 	FileInfo();
 	FileInfo(ifstream&, string);
 	void displayInfo();
+	void setBase(uint64_t);
 	//void read();
 	//void write();
 	//void update();
@@ -29,7 +30,7 @@ private:
 	uint64_t BaseEntry;
 	uint32_t NameLength;
 	uint32_t Offset;
-	streamoff FileSize;
+	uint32_t FileSize;
 	string Name;
 };
 #endif
