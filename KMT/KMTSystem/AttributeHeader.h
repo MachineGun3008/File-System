@@ -14,7 +14,7 @@ private:
 	uint32_t AttributeType;
 	uint32_t AttributeLength;
 	uint8_t Flag;
-	char Raw[7];
+	char Raw[7]{ '0' };
 };
 
 #endif

@@ -6,11 +6,12 @@
 class Security
 {
 public:
+	Security();
 	//uint32_t encrypt();
 	//// uint32_t encode();
 	//uint32_t update();
 private:
-	AttributeHeader Header;
+	//AttributeHeader Header;
 	uint32_t Length;
 	uint32_t Offset;
 	int8_t HavePass;

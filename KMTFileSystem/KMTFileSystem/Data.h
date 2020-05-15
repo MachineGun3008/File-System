@@ -14,7 +14,7 @@ public:
 
 	//void update();
 private:
-	AttributeHeader header;
+	//AttributeHeader header;
 	uint32_t Length;
 	uint32_t Offset;
 	vector<DataRun> data;

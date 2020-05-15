@@ -14,8 +14,7 @@
 
 int main()
 {
-	
-
+	AttributeHeader a;
 
 	system("pause");
 	return 0;

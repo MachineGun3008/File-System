@@ -1,7 +1,18 @@
 #include "Volume.h"
 
-void Volume::CreateVol(string path, uint64_t size_of_vol)
+void Volume::openvol()
 {
+	Vol.open(path);
+}
+
+void Volume::closevol()
+{
+	Vol.close();
+}
+
+void Volume::CreateVol(string p, uint64_t size_of_vol)
+{
+	path = path;
 	Vol.open(path, ios::out | ios::binary);
 	Boot.createBootSector(size_of_vol);
 	int64_t EmptyCluster[512] = { 0 };
@@ -13,4 +24,14 @@ void Volume::CreateVol(string path, uint64_t size_of_vol)
 	Boot.write(Vol);
 }
 
+void Volume::AddFile()
+{
+	ifstream fin(path, ios::binary);
 
+	string path;
+	cout << "Enter file path: "; cin >> path;
+	File f(fin, path);
+	f.Display();
+
+	fin.close();
+}

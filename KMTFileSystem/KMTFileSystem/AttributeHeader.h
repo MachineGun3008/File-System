@@ -5,11 +5,11 @@
 class AttributeHeader
 {
 public:
-	//AttributeHeader();
-	//void read();
-	//void write();
-	//void update();
-	//~AttributeHeader();
+	AttributeHeader();
+	void read();
+	void write();
+	void update();
+	~AttributeHeader();
 private:
 	uint32_t AttributeType;
 	uint32_t AttributeLength;

@@ -8,6 +8,9 @@
 class File
 {
 public:
+	File();
+	File(ifstream&, string);
+	void Display();
 	//void Read();
 	//void Write();
 	//void Delete();

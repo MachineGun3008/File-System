@@ -10,13 +10,13 @@
 class Volume
 {
 public:
-	//void OpenVol();
-	//void CloseVol();
+	void openvol();
+	void closevol();
 	void CreateVol(string path, uint64_t size_of_file);
 	//void Read();
 	//void SeekToCluster();
 	//void SeekToSector();
-	//void AddFile();
+	void AddFile();
 	//void AddFolder();
 	//void DeleteFile();
 	//void DeleteFolder();
@@ -28,6 +28,7 @@ private:
 	BootSector Boot;
 	BitMap ClusterManager;
 	vector<RecordHeader> RDET;
+	string path;
 };
 
 #endif
