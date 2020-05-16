@@ -3,7 +3,7 @@
 #define _FileInfo_
 
 #include "AttributeHeader.h"
-#include <windows.h>
+//#include <windows.h>
 
 //struct Time
 //{
@@ -23,7 +23,7 @@ public:
 	void getInfo(string path);
 	void setFileSize(uint64_t Size);
 	//void read();
-	//void write();
+	void write(fstream &Vol);
 	//void update();
 	//~FileInfo();
 private:
@@ -36,5 +36,6 @@ private:
 	//uint32_t Offset;
 	uint64_t FileSize;
 	string Name;
+	friend class File;
 };
 #endif

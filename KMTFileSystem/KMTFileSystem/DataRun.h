@@ -11,6 +11,8 @@ public:
 	//vector< uint8_t> GetLength();
 	int create(uint32_t Length, uint32_t Begin);
 	void write(fstream &Vol);
+	int getSize();
+	pair<uint32_t, uint32_t> convert();
 private:
 	uint8_t Header;
 	vector<uint8_t> Last;

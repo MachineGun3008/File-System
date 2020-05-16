@@ -11,6 +11,7 @@ public:
 	void read(fstream &Vol);
 	uint32_t getBeginOfCM();
 	uint64_t getTotalCluster();
+	uint64_t getBeginRDET();
 	// debug
 	void display();
 private:

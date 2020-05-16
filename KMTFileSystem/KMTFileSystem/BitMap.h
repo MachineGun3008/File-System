@@ -15,6 +15,7 @@ public:
 	pair<int32_t, uint32_t> GetCluster();
 
 	void pushBackFreeCluster(pair<int32_t, uint32_t> FreeCluster);
+	void update(uint32_t Last, uint32_t Begin);
 	//void update();
 	//~BitMap();
 	void create(uint32_t s); // s is total cluster

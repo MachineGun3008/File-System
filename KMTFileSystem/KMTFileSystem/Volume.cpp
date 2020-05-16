@@ -8,17 +8,19 @@ bool Volume::OpenVol(string path)
 	Boot.read(Vol);
 	ClusterManager.read(Vol, Boot.getBeginOfCM(), Boot.getTotalCluster());
 	ClusterManager.GetFreeCluster();
+	GetListFreeEntry();
 	return true;
 }
 
 void Volume::CloseVol()
 {
+	ClusterManager.write(Vol, Boot.getBeginOfCM());
 	Vol.close();
 }
 
 bool Volume::CreateVol(string p, uint64_t size_of_vol)
 {
-	Vol.open(p, ios::out | ios::binary);
+	Vol.open(p, ios::binary | ios::out);
 	if (!Vol.is_open())
 		return false;
 	Boot.createBootSector(size_of_vol);
@@ -32,6 +34,11 @@ bool Volume::CreateVol(string p, uint64_t size_of_vol)
 	ClusterManager.create(Cluster);
 	uint32_t BeginOfCM = Boot.getBeginOfCM();
 	ClusterManager.write(Vol, BeginOfCM);
+	Vol.close();
+	Vol.open(p, ios::binary | ios::in | ios::out);
+	if (!Vol.is_open())
+		return false;
+	GetListFreeEntry();
 	return true;
 }
 void Volume::display()
@@ -60,9 +67,9 @@ void Volume::GetListFreeEntry()
 }
 pair<bool, uint64_t> Volume::GetFreeEntry()
 {
-	if (!FreeEntry.empty())
-		return { -1, 0 };
-	pair<bool, uint64_t> Entry = { 1, FreeEntry.front };
+	if (FreeEntry.empty())
+		return { 0, 0 };
+	pair<bool, uint64_t> Entry = { 1, FreeEntry.front() };
 	FreeEntry.pop_front();
 	return Entry;
 }
@@ -77,23 +84,127 @@ bool Volume::AddFile(string path, uint64_t RootParent)
 	if (PushDataToVol.first == 0)
 		return 0;
 	f.getInfo(path, PushDataToVol.second);
-	
+
 	// count how many entry
-	int cnt = 0;
+	int cnt = 1;
 	list<uint64_t> UseEntry; // Entry use to store file
 
 	//Remain space in entry to store attribute
-	uint32_t Size = 468;
+	int Size = 476;
 
 	pair<bool, uint64_t> Entry = GetFreeEntry();
 	if (Entry.first == 0)
+	{// Need to handle in here
+		auto it = UseEntry.begin();
+		--it;
+		while (true)
+		{
+			FreeEntry.push_front(*it);
+			if (it == UseEntry.begin())
+				break;
+			else
+				--it;
+		}
+		ClusterManager.GetFreeCluster();
 		return false;
-	char Sector[512];
-	int pos = 0;
-	Sector[0] = 1, Sector[1] = 'K', Sector[2] = 'M', Sector[3] = 'T';
-	
+	}
+	UseEntry.push_back(Entry.second);
+	f.setBase(Entry.second);
+	//char Sector[512];
+	//int pos = 0;
 	SeekToSector(Entry.second);
+	Vol.seekg(32, ios_base::cur);
+	AttributeHeader AH;
+	uint32_t Length = f.getSizeInfo(), Raw = 0;
+	Raw = (8 - (Length % 8)) % 8;
+	AH.Create(16, Length + Raw);
+	AH.write(Vol);
+	f.writeInfo(Vol);
+	Vol.seekg(Raw, ios_base::cur);
+	Size -= Length + Raw + 8;
+	Length = f.getSizeSecurity();
+	Raw = (8 - (Length % 8)) % 8;
+	AH.Create(32, Length + Raw);
+	AH.write(Vol);
+	f.writeSecurity(Vol);
+	Vol.seekg(Raw, ios_base::cur);
+	Size -= Length + Raw + 8;
+	Size -= 8;
+	int pos = 0, tmp = Size;
+	list<DataRun> BlockData, Cluster;
+	f.getBlockData(BlockData, Size, pos);
+	int EndAttribute = -1;
+	while (true)
+	{
+		AH.Create(48, tmp - Size);
+		AH.write(Vol);
+		for (auto it = BlockData.begin(); it != BlockData.end(); ++it)
+		{
+			it->write(Vol);
+			Cluster.push_back(*it);
+		}
+		Vol.write((char *)&EndAttribute, sizeof(int));
+		if (pos != -1)
+		{
+			Entry = GetFreeEntry();
+			if (Entry.first == 0)
+			{// Need to handle in here
+				ClusterManager.GetFreeCluster();
+				auto it = UseEntry.begin();
+				--it;
+				while (true)
+				{
+					FreeEntry.push_front(*it);
+					if (it == UseEntry.begin())
+						break;
+					else
+						--it;
+				}
+				return false;
+			}
+			UseEntry.push_back(Entry.second);
+			Vol.seekg(32, ios_base::cur);
+			Size = 468;
+			tmp = Size;
+			++cnt;
+			BlockData.clear();
+			f.getBlockData(BlockData, Size, pos);
+		}
+		else
+			break;
+	}
+	for (auto it = Cluster.begin(); it != Cluster.end(); ++it)
+	{
+		pair<uint32_t, uint32_t> c = it->convert();
+		ClusterManager.update(c.first, c.second);
+	}
+	RecordHeader Header;
+	uint64_t previous = 0;
+	for (auto it = UseEntry.begin(); it != UseEntry.end(); ++it)
+	{
+		uint64_t EntryChild;
+		++it;
+		if (it != UseEntry.end())
+			EntryChild = *it;
+		else
+		{
+			EntryChild = 0;
+			EntryChild = ~EntryChild;
+		}
+		--it;
+		Header.create(1, cnt, previous, EntryChild, RootParent);
+		SeekToSector(*it);
+		previous = *it;
+		Header.write(Vol);
+	}
 	return true;
+}
+void Volume::UpdateClusterManager(list<DataRun> &Run)
+{
+	for (auto it = Run.begin(); it != Run.end(); ++it)
+	{
+		pair<uint32_t, uint32_t> d = it->convert();
+	}
 }
 void Volume::SeekToCluster(uint32_t position)
 {
@@ -134,20 +245,23 @@ pair<bool, uint64_t> Volume::GetDataFromFile(File &f, string path)
 			CurrentCluster = FreeCluster.second;
 			SeekToCluster(CurrentCluster);
 		}
-		
+
 		// muon compress data thi code trong block nay lam sao tra ve Cluster da nen data
 		// bat dau cho nen
 		fin.read((char *)&Cluster, sizeof(char) * 4096);
-		
+
 		// ket thuc nen
 		uint32_t ByteCount = fin.gcount();
 		Size += ByteCount;
 		if (ByteCount < 4096)
 			fill(Cluster + ByteCount, Cluster + 4096, 0);
-		Vol.write((char *)&Cluster, sizeof(char) * 4096);
-		++Run.first;
-		--FreeCluster.first;
-		++FreeCluster.second;
+		if (ByteCount)
+		{
+			Vol.write((char *)&Cluster, sizeof(char) * 4096);
+			++Run.first;
+			--FreeCluster.first;
+			++FreeCluster.second;
+		}
 	}
 	if (FreeCluster.first)
 	{

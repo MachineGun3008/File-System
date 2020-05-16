@@ -5,16 +5,17 @@
 class AttributeHeader
 {
 public:
-	AttributeHeader();
-	void read();
-	void write();
-	void update();
-	~AttributeHeader();
+	//AttributeHeader();
+	//void read();
+	void write(fstream &Vol);
+	//void update();
+	//~AttributeHeader();
+	void Create(uint32_t Type, uint32_t Length);
 private:
 	uint32_t AttributeType;
 	uint32_t AttributeLength;
-	uint8_t Flag;
-	char Raw[7];
+	//uint8_t Flag;
+	//char Raw[7];
 };
 
 #endif

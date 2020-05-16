@@ -6,8 +6,6 @@
 #include "BootSector.h"
 #include "BitMap.h"
 #include "RecordHeader.h"
-#include<fstream>
-#include<list>
 class Volume
 {
 public:
@@ -32,6 +30,7 @@ public:
 	void GetListFreeEntry();
 	pair<bool, uint64_t> GetFreeEntry();
 	void PushBackEntry(uint64_t Entry);
+	void UpdateClusterManager(list<DataRun> &Run);
 	void display();
 private:
 	fstream Vol;

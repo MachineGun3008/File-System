@@ -11,6 +11,8 @@ public:
 	//void write();
 	//void update();
 	//~RecordHeader();
+	void create(uint8_t flag, uint32_t entries, uint64_t entryparent, uint64_t entrychild, uint64_t folderparent);
+	void write(fstream &Vol);
 private:
 	uint8_t Flag;
 	const char Label[3] = { 'K', 'M', 'T' };
@@ -18,8 +20,8 @@ private:
 	uint64_t EntryParent;
 	uint64_t EntryChild;
 	uint64_t FolderParent;
-	uint32_t FirstAttribute;
-	uint32_t Raw;
+	//uint32_t FirstAttribute;
+	//uint32_t Raw;
 };
 #endif // !_RECORDHEADER_
 

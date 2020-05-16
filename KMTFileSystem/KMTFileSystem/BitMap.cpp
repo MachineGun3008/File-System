@@ -41,6 +41,8 @@ void BitMap::GetFreeCluster()
 {
 	uint32_t ClusterBegin = 0, pre = 1, cur, Cluster = 0;
 	int32_t length = 0;
+	while (!pq.empty())
+		pq.pop();
 	for (int i = 0; i < Size; ++i)
 	{
 		for (int j = 0; j < 8; ++j)
@@ -87,4 +89,16 @@ void BitMap::display()
 void BitMap::pushBackFreeCluster(pair<int32_t, uint32_t> FreeCluster)
 {
 	pq.push(FreeCluster);
+}
+void BitMap::update(uint32_t Last, uint32_t Begin)
+{
+	int i = Begin / 8, j = Begin % 8;
+	while (Last)
+	{
+		Bit[i] ^= (1 << j);
+		++j;
+		if (j == 8)
+			++i, j = 0;
+		--Last;
+	}
 }

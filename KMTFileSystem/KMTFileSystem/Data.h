@@ -5,6 +5,7 @@
 #include "AttributeHeader.h"
 #include "DataRun.h"
 #include "BitMap.h"
+#include<list>
 class Data
 {
 public:
@@ -12,6 +13,7 @@ public:
 	//void write();
 	//BitMap GetCluster(); // ???
 	void addRun(pair<int32_t, uint32_t> Run);
+	void getBlockData(list<DataRun> &ans, int &Size, int &pos);
 	//void update();
 private:
 	//AttributeHeader header;

@@ -21,4 +21,11 @@ void FileInfo::setFileSize(uint64_t Size)
 {
 	FileSize = Size;
 }
+void FileInfo::write(fstream &Vol)
+{
+	Vol.write((char *)&BaseEntry, sizeof(BaseEntry));
+	Vol.write((char *)&NameLength, sizeof(NameLength));
+	Vol.write((char *)&FileSize, sizeof(FileSize));
+	Vol.write((char *)&Name[0], sizeof(char) * NameLength);
+}
 
