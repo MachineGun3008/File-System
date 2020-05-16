@@ -40,3 +40,8 @@ uint32_t BootSector::getBeginOfCM()
 {
 	return Sector_Begin_Of_CM;
 }
+void BootSector::display()
+{
+	cout << Byte_Per_Sector << '\n' << Sector_Per_Cluster << '\n' << Total_Sector << '\n' << Total_Cluster
+		<< '\n' << Sector_Begin_Of_CM << '\n' << Sector_Begin_RDET << '\n';
+}

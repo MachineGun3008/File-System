@@ -3,8 +3,10 @@
 int main()
 {
 	Volume f;
-	f.CreateVol("D:\\test.bin", 1);
-	f.closevol();
+	f.OpenVol("D:\\test.bin");
+	//f.display();
+	f.AddFile("D:\\F5.txt");
+	f.CloseVol();
 
 	system("pause");
 	return 0;

@@ -25,7 +25,7 @@ void BitMap::create(uint32_t s)
 }
 void BitMap::read(fstream &Vol, uint32_t Position, uint32_t s)
 {
-	Vol.seekg(ios_base::beg, uint64_t(Position) * 512);
+	Vol.seekg(uint64_t(Position) * 512, ios_base::beg);
 	Size = s / 8 + (s % 8 != 0);
 	Bit.resize(Size);
 	Vol.read((char *)&Bit[0], sizeof(uint8_t) * Size);
@@ -39,7 +39,8 @@ void BitMap::write(fstream &Vol, uint32_t Position)
 
 void BitMap::GetFreeCluster()
 {
-	uint32_t length = 0, ClusterBegin = 0, pre = 1, cur, Cluster = 0;
+	uint32_t ClusterBegin = 0, pre = 1, cur, Cluster = 0;
+	int32_t length = 0;
 	for (int i = 0; i < Size; ++i)
 	{
 		for (int j = 0; j < 8; ++j)
@@ -56,7 +57,7 @@ void BitMap::GetFreeCluster()
 				{
 					ClusterBegin = Cluster;
 				}
-				length = 0;
+				length = 1;
 				pre = cur;
 			}
 			else
@@ -67,4 +68,23 @@ void BitMap::GetFreeCluster()
 	}
 	if (pre == 0)
 		pq.push({ length, ClusterBegin });
+}
+pair<int32_t, uint32_t> BitMap::GetCluster()
+{
+	if (pq.empty())
+		return { -1, 0 };
+	pair<int32_t, uint32_t> BlockCluster = pq.top();
+	pq.pop();
+	return BlockCluster;
+}
+void BitMap::display()
+{
+	cout << Size << '\n';
+	for (int i = 0; i < Size; ++i)
+		cout << Bit[i] << ' ';
+	cout << '\n';
+}
+void BitMap::pushBackFreeCluster(pair<int32_t, uint32_t> FreeCluster)
+{
+	pq.push(FreeCluster);
 }

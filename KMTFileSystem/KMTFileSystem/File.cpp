@@ -1,24 +1,11 @@
 #include "File.h"
 
-File::File(ifstream &in, string path)
+void File::getInfo(string path, uint64_t Size)
 {
-	FileInfo i(in,path);
-	info = i;
-
-	char choice = 'N';
-	string p;
-	cout << "Do you want to create password? [Y/N]: "; cin >> choice;
-	if (choice == 'y')
-	{
-		cout << "Enter password: "; cin >> p;
-		cout << "Your password is: " << p << endl;
-	}
-	//Security s(p); // 'Y' 
-	//Security s;	 // 'N'
-	//pass = p;
+	info.getInfo(path);
+	info.setFileSize(Size);
 }
-
-void File::Display()
+void File::addRun(pair<int32_t, uint32_t> Run)
 {
-	info.displayInfo();
+	data.addRun(Run);
 }

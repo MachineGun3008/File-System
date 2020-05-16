@@ -11,11 +11,11 @@ public:
 	//void read();
 	//void write();
 	//BitMap GetCluster(); // ???
-
+	void addRun(pair<int32_t, uint32_t> Run);
 	//void update();
 private:
 	//AttributeHeader header;
-	uint32_t Length;
+	uint32_t Length = 0;
 	uint32_t Offset;
 	vector<DataRun> data;
 };

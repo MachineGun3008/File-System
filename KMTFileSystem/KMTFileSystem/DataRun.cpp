@@ -1,6 +1,6 @@
 #include "DataRun.h"
 
-void DataRun::create(uint32_t Length, uint32_t Begin)
+int DataRun::create(uint32_t Length, uint32_t Begin)
 {
 	while (Length)
 	{
@@ -17,6 +17,7 @@ void DataRun::create(uint32_t Length, uint32_t Begin)
 	}
 	reverse(ClusterBegin.begin(), ClusterBegin.end());
 	Header = ClusterBegin.size() * 16 + Last.size();
+	return ClusterBegin.size() + Last.size() + 1;
 }
 void DataRun::write(fstream &Vol)
 {

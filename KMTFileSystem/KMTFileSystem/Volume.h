@@ -7,28 +7,38 @@
 #include "BitMap.h"
 #include "RecordHeader.h"
 #include<fstream>
+#include<list>
 class Volume
 {
 public:
-	void openvol();
-	void closevol();
-	void CreateVol(string path, uint64_t size_of_file);
+	bool OpenVol(string path);
+	void CloseVol();
+	bool CreateVol(string path, uint64_t size_of_file);
 	//void Read();
 	//void SeekToCluster();
 	//void SeekToSector();
-	void AddFile();
+	bool AddFile(string path, uint64_t RootFolder);
+	
+	// bool means get data successful, uin64_t is size of file in byte
+	pair<bool, uint64_t> GetDataFromFile(File &f, string path);
 	//void AddFolder();
 	//void DeleteFile();
 	//void DeleteFolder();
 	//void MoveFile();
 	//void MoveFolder();
 	//void CreatePass();
+	void SeekToCluster(uint32_t position);
+	void SeekToSector(uint64_t position);
+	void GetListFreeEntry();
+	pair<bool, uint64_t> GetFreeEntry();
+	void PushBackEntry(uint64_t Entry);
+	void display();
 private:
 	fstream Vol;
 	BootSector Boot;
 	BitMap ClusterManager;
-	vector<RecordHeader> RDET;
-	string path;
+	list<uint64_t> FreeEntry;
+	//string path;
 };
 
 #endif

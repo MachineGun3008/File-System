@@ -9,7 +9,7 @@ public:
 	//DataRun();
 	//vector<uint8_t> GetClusterBegin(); // offset begin
 	//vector< uint8_t> GetLength();
-	void create(uint32_t Length, uint32_t Begin);
+	int create(uint32_t Length, uint32_t Begin);
 	void write(fstream &Vol);
 private:
 	uint8_t Header;

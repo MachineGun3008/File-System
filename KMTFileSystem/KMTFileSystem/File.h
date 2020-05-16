@@ -8,9 +8,12 @@
 class File
 {
 public:
-	File();
-	File(ifstream&, string);
-	void Display();
+	//File();
+	//File(ifstream&, string);
+	//void Create(string path);
+	void getInfo(string path, uint64_t Size);
+	void addRun(pair<int32_t, uint32_t> Run);
+	//void Display();
 	//void Read();
 	//void Write();
 	//void Delete();

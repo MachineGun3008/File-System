@@ -11,6 +11,8 @@ public:
 	void read(fstream &Vol);
 	uint32_t getBeginOfCM();
 	uint64_t getTotalCluster();
+	// debug
+	void display();
 private:
 	const string label = " AKCMTT ";
 	uint32_t Byte_Per_Sector;
