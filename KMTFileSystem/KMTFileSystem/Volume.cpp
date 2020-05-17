@@ -77,7 +77,7 @@ void Volume::PushBackEntry(uint64_t Entry)
 {
 	FreeEntry.push_back(Entry);
 }
-bool Volume::AddFile(string path, uint64_t RootParent)
+int Volume::AddFile(string path, uint64_t RootParent)
 {
 	File f;
 	pair<bool, uint64_t> PushDataToVol = GetDataFromFile(f, path);
@@ -95,6 +95,8 @@ bool Volume::AddFile(string path, uint64_t RootParent)
 	pair<bool, uint64_t> Entry = GetFreeEntry();
 	if (Entry.first == 0)
 	{// Need to handle in here
+		if (UseEntry.empty())
+			return 0;
 		auto it = UseEntry.begin();
 		--it;
 		while (true)
@@ -106,7 +108,7 @@ bool Volume::AddFile(string path, uint64_t RootParent)
 				--it;
 		}
 		ClusterManager.GetFreeCluster();
-		return false;
+		return 0;
 	}
 	UseEntry.push_back(Entry.second);
 	f.setBase(Entry.second);
@@ -160,7 +162,7 @@ bool Volume::AddFile(string path, uint64_t RootParent)
 					else
 						--it;
 				}
-				return false;
+				return 0;
 			}
 			UseEntry.push_back(Entry.second);
 			Vol.seekg(32, ios_base::cur);
@@ -197,7 +199,7 @@ bool Volume::AddFile(string path, uint64_t RootParent)
 		previous = *it;
 		Header.write(Vol);
 	}
-	return true;
+	return UseEntry.front();
 }
 void Volume::UpdateClusterManager(list<DataRun> &Run)
 {
@@ -270,4 +272,176 @@ pair<bool, uint64_t> Volume::GetDataFromFile(File &f, string path)
 	}
 	fin.close();
 	return { 1, Size };
+}
+int Volume::CreateFolder(string Name, uint64_t RootFolder)
+{
+	pair<bool, uint64_t> Entry = GetFreeEntry();
+	if (!Entry.first)
+		return 0;
+	int Size = 512;
+	RecordHeader Header;
+	Header.create(2, 1, 0, 0, RootFolder);
+	SeekToSector(Entry.second);
+	Header.write(Vol);
+	Size -= 32;
+	AttributeHeader AH;
+	int Length, Raw;
+	FileInfo Info;
+	Info.getInfo(Name);
+	Info.setBase(Entry.second);
+	Info.setFileSize(0);
+	Length = Info.getLength();
+	Raw = (8 - (Length % 8)) % 8;
+	AH.Create(16, Length + Raw);
+	AH.write(Vol);
+	Info.write(Vol);
+	Vol.seekg(Raw, ios_base::cur);
+	Size -= Length + Raw + 8;
+	Security S;
+	Length = S.getSize();
+	Raw = (8 - (Length % 8)) % 8;
+	AH.Create(32, Length + Raw);
+	AH.write(Vol);
+	S.write(Vol);
+	Vol.seekg(Raw, ios_base::cur);
+	Size -= Length + Raw + 8 + 4;
+	Index I;
+	Length = I.getSize();
+	Raw = (8 - (Length % 8)) % 8;
+	AH.Create(64, Length);
+	AH.write(Vol);
+	Size -= 16;
+	I.create(0, Size);
+	I.write(Vol);
+	int EndAttribute = ~0;
+	Vol.write((char *)&EndAttribute, sizeof(EndAttribute));
+	return Entry.second;
+}
+int Volume::AddFileToFolder(string path, uint64_t Folder)
+{
+	uint64_t EntryOfFile = AddFile(path, Folder);
+	if (!EntryOfFile)
+		return 0;
+	FileInfo Info = GetFileInfo(EntryOfFile);
+	AttributeHeader AH;
+	int Length = Info.getLength();
+	int Raw = (8 - (Length % 8)) % 8;
+	AH.Create(16, Length + Raw);
+	Length += Raw + 8;
+	bool HasAdd = false;
+	list<uint64_t> Entry;
+	Entry.push_back(Folder);
+	RecordHeader Header;
+	AttributeHeader ah;
+	int offset = 0;
+	while (true)
+	{
+		SeekToSector(Entry.back());
+		Header.read(Vol);
+		offset += 32;
+		while (true)
+		{
+			ah.read(Vol);
+			//offset += 8;
+			int type = ah.getType();
+			if (type == 64 || type == -1)
+				break;
+			Vol.seekg(ah.getLength(), ios_base::cur);
+			offset += ah.getLength() + 8;
+		}
+		if (ah.getType() == -1)
+		{
+			uint64_t NextEntry = Header.getEntryChild();
+			if ((int64_t)NextEntry == -1)
+				break;
+			else
+			{
+				Entry.push_back(NextEntry);
+				offset = 0;
+			}
+		}
+		else
+		{
+			//offset += 8;
+			Index I;
+			I.read(Vol);
+			//AH.write(Vol); Info.write(Vol);
+			//HasAdd = true;
+			//break;
+			if (I.getRemainSize() >= Length)
+			{
+				if (I.getLength())
+					Vol.seekg(I.getLength(), ios_base::cur);
+				SeekToSector(Entry.back());
+				Vol.seekg(offset + 16 + I.getLength(), ios_base::cur);
+				AH.write(Vol);
+				Info.write(Vol);
+				Vol.seekg(Raw, ios_base::cur);
+				int EndMark = -1;
+				Vol.write((char *)&EndMark, sizeof(int));
+				I.create(I.getLength() + Length, I.getRemainSize() - Length);
+				SeekToSector(Entry.back());
+				Vol.seekg(offset, ios_base::cur);
+				ah.Create(64, I.getSize());
+				ah.write(Vol);
+				I.write(Vol);
+				HasAdd = true;
+				break;
+			}
+			else
+			{
+				uint64_t NextEntry = Header.getEntryChild();
+				if ((int64_t)NextEntry == -1)
+					break;
+				else
+				{
+					Entry.push_back(NextEntry);
+					offset = 0;
+				}
+			}
+		}
+	}
+	if (!HasAdd)
+	{
+		pair<bool, uint64_t> NewEntry = GetFreeEntry();
+		if (NewEntry.first == 0)
+		{
+			// delete file
+			return 0;
+		}
+		Header.create(2, Entry.size() + 1, Entry.back(), 0, Header.getFolderParent());
+		SeekToSector(NewEntry.second);
+		Header.write(Vol);
+		AH.Create(64, 8 + Length);
+		AH.write(Vol);
+		Index I;
+		I.create(Length, 512 - 32 - 8 - 4 - 8 - Length);
+		I.write(Vol);
+		AH.Create(16, Length - 8);
+		AH.write(Vol);
+		Info.write(Vol);
+		int EndMark = -1;
+		Vol.write((char *)&EndMark, sizeof(int));
+		for (auto it = Entry.begin(); it != Entry.end(); ++it)
+		{
+			SeekToSector(*it);
+			Vol.seekg(4, ios_base::cur);
+			uint32_t cnt = Entry.size() + 1;
+			Vol.write((char *)&cnt, sizeof(cnt));
+		}
+		auto it = Entry.end();
+		--it;
+		SeekToSector(*it);
+		Vol.seekg(16, ios_base::cur);
+		Vol.write((char *)&NewEntry.second, sizeof(uint64_t));
+	}
+	return 1;
+}
+FileInfo Volume::GetFileInfo(uint64_t Entry)
+{
+	SeekToSector(Entry);
+	Vol.seekg(40, ios_base::cur);
+	FileInfo ans;
+	ans.read(Vol);
+	return ans;
 }

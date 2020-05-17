@@ -4,6 +4,7 @@ Security::Security()
 {
 	Length = 0;
 	HavePass = 0;
+	fill(Pass, Pass + 200, 0);
 }
 uint32_t Security::getSize()
 {

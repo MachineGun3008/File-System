@@ -6,6 +6,7 @@
 #include "BootSector.h"
 #include "BitMap.h"
 #include "RecordHeader.h"
+#include "Index.h"
 class Volume
 {
 public:
@@ -15,7 +16,7 @@ public:
 	//void Read();
 	//void SeekToCluster();
 	//void SeekToSector();
-	bool AddFile(string path, uint64_t RootFolder);
+	int AddFile(string path, uint64_t RootFolder);
 	
 	// bool means get data successful, uin64_t is size of file in byte
 	pair<bool, uint64_t> GetDataFromFile(File &f, string path);
@@ -25,6 +26,12 @@ public:
 	//void MoveFile();
 	//void MoveFolder();
 	//void CreatePass();
+
+	// Folder
+	int CreateFolder(string Name, uint64_t RootFolder);
+	int AddFileToFolder(string path, uint64_t Folder);
+	FileInfo GetFileInfo(uint64_t Entry);
+
 	void SeekToCluster(uint32_t position);
 	void SeekToSector(uint64_t position);
 	void GetListFreeEntry();

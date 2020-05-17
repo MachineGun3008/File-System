@@ -14,8 +14,12 @@ void FileInfo::setBase(uint64_t base)
 }
 void FileInfo::getInfo(string path)
 {
-	NameLength = path.size();
-	Name = path;
+	int Begin = path.size() - 1;
+	while (Begin >= 0 && path[Begin] != '\\')
+		--Begin;
+	++Begin;
+	NameLength = path.size() - Begin;
+	Name = path.substr(Begin, path.size() - Begin);
 }
 void FileInfo::setFileSize(uint64_t Size)
 {
@@ -28,4 +32,15 @@ void FileInfo::write(fstream &Vol)
 	Vol.write((char *)&FileSize, sizeof(FileSize));
 	Vol.write((char *)&Name[0], sizeof(char) * NameLength);
 }
-
+uint32_t FileInfo::getLength()
+{
+	return sizeof(BaseEntry) + sizeof(NameLength) + sizeof(FileSize) + Name.size();
+}
+void FileInfo::read(fstream &Vol)
+{
+	Vol.read((char *)&BaseEntry, sizeof(BaseEntry));
+	Vol.read((char *)&NameLength, sizeof(NameLength));
+	Vol.read((char *)&FileSize, sizeof(FileSize));
+	Name.resize(NameLength);
+	Vol.read((char *)&Name[0], sizeof(char) * NameLength);
+}

@@ -5,8 +5,9 @@ int main()
 	Volume f;
 	//f.CreateVol("D:\\test.bin", 1);
 	f.OpenVol("D:\\test.bin");
-	//f.display();
-	f.AddFile("D:\\F2.txt", 0);
+	//f.AddFile("D:\\F3.txt", 0);
+	//f.CreateFolder("NewFolder", 0);
+	f.AddFileToFolder("D:\\aaaaaaaaaaaaaaaaaaaa.txt", 3);
 	f.CloseVol();
 
 	system("pause");

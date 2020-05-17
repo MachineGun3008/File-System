@@ -22,8 +22,9 @@ public:
 	void setBase(uint64_t);
 	void getInfo(string path);
 	void setFileSize(uint64_t Size);
-	//void read();
+	void read(fstream &Vol);
 	void write(fstream &Vol);
+	uint32_t getLength();
 	//void update();
 	//~FileInfo();
 private:

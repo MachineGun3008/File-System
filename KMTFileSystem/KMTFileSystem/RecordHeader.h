@@ -7,12 +7,15 @@ class RecordHeader
 {
 public:
 	//RecordHeader();
-	//void read();
+	void read(fstream &Vol);
 	//void write();
 	//void update();
 	//~RecordHeader();
 	void create(uint8_t flag, uint32_t entries, uint64_t entryparent, uint64_t entrychild, uint64_t folderparent);
 	void write(fstream &Vol);
+	uint64_t getEntryChild();
+	uint64_t getFolderParent();
+	void setEntries(uint32_t e);
 private:
 	uint8_t Flag;
 	const char Label[3] = { 'K', 'M', 'T' };
