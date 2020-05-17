@@ -322,6 +322,11 @@ int Volume::AddFileToFolder(string path, uint64_t Folder)
 	uint64_t EntryOfFile = AddFile(path, Folder);
 	if (!EntryOfFile)
 		return 0;
+	return EntryOfFile;
+}
+
+int Volume::AddEntryToFolder(uint64_t EntryOfFile, uint64_t Folder)
+{
 	FileInfo Info = GetFileInfo(EntryOfFile);
 	AttributeHeader AH;
 	int Length = Info.getLength();
@@ -444,4 +449,38 @@ FileInfo Volume::GetFileInfo(uint64_t Entry)
 	FileInfo ans;
 	ans.read(Vol);
 	return ans;
+}
+int Volume::AddFolder(string path, uint64_t RootFolder)
+{
+	string Name;
+	int Begin = path.size() - 1;
+	while (Begin >= 0 && path[Begin] != '\\')
+		Begin--;
+	++Begin;
+	Name = path.substr(Begin, path.size() - Begin);
+	uint64_t FolderEntry = CreateFolder(Name, RootFolder);
+	if (!FolderEntry)
+		return 0;
+	uint64_t SubEntry = 0;
+	for (auto entry = fs::directory_iterator(path); entry != fs::directory_iterator(); ++entry)
+	{
+		Name = entry->path().string();
+		if (fs::is_directory(Name))
+		{
+			SubEntry = AddFolder(Name, FolderEntry);
+		}
+		else
+			SubEntry = AddFile(Name, FolderEntry);
+		if (!SubEntry)
+		{
+			// Need to handle
+			return 0;
+		}
+		if (!AddEntryToFolder(SubEntry, FolderEntry))
+		{
+			//Need to Handle
+			return 0;
+		}
+	}
+	return FolderEntry;
 }
