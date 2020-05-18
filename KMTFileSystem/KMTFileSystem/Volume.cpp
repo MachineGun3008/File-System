@@ -84,7 +84,7 @@ int Volume::AddFile(string path, uint64_t RootParent)
 	if (PushDataToVol.first == 0)
 		return 0;
 	f.getInfo(path, PushDataToVol.second);
-
+	f.Extract();
 	// count how many entry
 	int cnt = 1;
 	list<uint64_t> UseEntry; // Entry use to store file
@@ -214,12 +214,12 @@ void Volume::SeekToCluster(uint32_t position)
 }
 pair<bool, uint64_t> Volume::GetDataFromFile(File &f, string path)
 {
-	ifstream fin(path, ios::binary | ios::in);
+	// cannot open img and audio ???
+	ifstream fin(path, ios::in, ios::binary);
 	if (!fin.is_open())
 	{
 		return { 0, 0 };
 	}
-	char Cluster[4096];
 	pair<int32_t, uint32_t> FreeCluster = ClusterManager.GetCluster(), Run;
 	if (FreeCluster.first == -1)
 	{
@@ -250,10 +250,27 @@ pair<bool, uint64_t> Volume::GetDataFromFile(File &f, string path)
 
 		// muon compress data thi code trong block nay lam sao tra ve Cluster da nen data
 		// bat dau cho nen
-		fin.read((char *)&Cluster, sizeof(char) * 4096);
+
+		char Cluster[4096];
+		//fin.read((char *)&Cluster, sizeof(char) * 4096);
+		fin.seekg(0);
+		string buf;
+		char temp;
+		while (fin >> std::noskipws >> temp)
+		{
+			buf += temp;
+		}
+
+		HuffmanNode* p;
+		pair<string, int> compress = encode(countFreq(buf, buf.length()), buf, p);
+		f.setD(compress.first );
+		f.setAbits(compress.second);
+		f.setTree(p);
+		for (int i = 0; i < f.getD().length(); i++)
+			Cluster[i] = f.getD()[i];
 
 		// ket thuc nen
-		uint32_t ByteCount = fin.gcount();
+		uint32_t ByteCount = f.getD().length();
 		Size += ByteCount;
 		if (ByteCount < 4096)
 			fill(Cluster + ByteCount, Cluster + 4096, 0);
@@ -271,6 +288,7 @@ pair<bool, uint64_t> Volume::GetDataFromFile(File &f, string path)
 		f.addRun(Run);
 	}
 	fin.close();
+
 	return { 1, Size };
 }
 int Volume::CreateFolder(string Name, uint64_t RootFolder)
@@ -441,6 +459,12 @@ int Volume::AddEntryToFolder(uint64_t EntryOfFile, uint64_t Folder)
 		Vol.write((char *)&NewEntry.second, sizeof(uint64_t));
 	}
 	return 1;
+}
+void Volume::ExtractFile()
+{
+	// Display Files
+	cout << "Choose file to extract: ";
+
 }
 FileInfo Volume::GetFileInfo(uint64_t Entry)
 {

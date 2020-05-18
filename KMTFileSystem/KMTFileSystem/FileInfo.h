@@ -3,6 +3,7 @@
 #define _FileInfo_
 
 #include "AttributeHeader.h"
+#include "Huffman.h"
 //#include <windows.h>
 
 //struct Time
@@ -25,6 +26,7 @@ public:
 	void read(fstream &Vol);
 	void write(fstream &Vol);
 	uint32_t getLength();
+	string getName();
 	//void update();
 	//~FileInfo();
 private:

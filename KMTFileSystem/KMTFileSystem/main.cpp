@@ -2,14 +2,15 @@
 
 int main()
 {
-	Volume f;
-	//f.CreateVol("D:\\test.bin", 1);
-	f.OpenVol("D:\\test.bin");
-	//f.AddFile("D:\\F3.txt", 0);
-	//f.CreateFolder("NewFolder", 0);
-	//f.AddFileToFolder("D:\\aaaaaaaaaaaaaaaaaaaa.txt", 3);
-	f.AddFolder("D:\\KMT", 0);
-	f.CloseVol();
+	Volume v;
+	//v.CreateVol("D:\\test.kmt", 1);
+	v.OpenVol("D:\\test.kmt");
+	v.AddFile("D:\\audio.mp3", 0);
+	//v.Extract();
+	//v.CreateFolder("NewFolder", 0);
+	//v.AddFileToFolder("D:\\aaaaaaaaaaaaaaaaaaaa.txt", 3);
+	//v.AddFolder("D:\\KMT", 0);
+	v.CloseVol();
 
 	system("pause");
 	return 0;

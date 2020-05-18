@@ -7,7 +7,6 @@ FileInfo::FileInfo()
 	FileSize = 0;
 }
 
-
 void FileInfo::setBase(uint64_t base)
 {
     BaseEntry = base;
@@ -35,6 +34,10 @@ void FileInfo::write(fstream &Vol)
 uint32_t FileInfo::getLength()
 {
 	return sizeof(BaseEntry) + sizeof(NameLength) + sizeof(FileSize) + Name.size();
+}
+string FileInfo::getName()
+{
+	return Name;
 }
 void FileInfo::read(fstream &Vol)
 {

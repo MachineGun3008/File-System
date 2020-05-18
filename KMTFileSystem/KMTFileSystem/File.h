@@ -20,7 +20,12 @@ public:
 	void setBase(uint64_t Entry);
 	void writeInfo(fstream &Vol);
 	uint32_t getSizeInfo();
-
+	string getName();
+	HuffmanNode* getTree();
+	void setTree(HuffmanNode* p);
+	void setD(string s);
+	void setAbits(int i);
+	string getD();
 	// Security
 	uint32_t getSizeSecurity();
 	void writeSecurity(fstream &Vol);
@@ -29,7 +34,12 @@ public:
 	//void Read();
 	//void Write();
 	//void Delete();
+	void Extract();
 private:
+	HuffmanNode* root;
+	//pair<String, int>
+	string d;
+	int Abits;
 	FileInfo info;
 	Security pass;
 	Data data;

@@ -7,8 +7,8 @@
 #include "BitMap.h"
 #include "RecordHeader.h"
 #include "Index.h"
-#include<experimental/filesystem>
-namespace fs = experimental::filesystem;
+#include<filesystem>
+namespace fs = filesystem;
 class Volume
 {
 public:
@@ -35,7 +35,8 @@ public:
 	FileInfo GetFileInfo(uint64_t Entry);
 	int AddFolder(string paht, uint64_t RootFolder);
 	int AddEntryToFolder(uint64_t EntryOfFile, uint64_t Folder);
-	
+	void ExtractFile();
+
 	void SeekToCluster(uint32_t position);
 	void SeekToSector(uint64_t position);
 	void GetListFreeEntry();
