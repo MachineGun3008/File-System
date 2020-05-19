@@ -215,7 +215,7 @@ void Volume::SeekToCluster(uint32_t position)
 pair<bool, uint64_t> Volume::GetDataFromFile(File &f, string path)
 {
 	// cannot open img and audio ???
-	ifstream fin(path, ios::in, ios::binary);
+	ifstream fin(path, ios::in | ios::binary);
 	if (!fin.is_open())
 	{
 		return { 0, 0 };
@@ -253,7 +253,7 @@ pair<bool, uint64_t> Volume::GetDataFromFile(File &f, string path)
 
 		char Cluster[4096];
 		//fin.read((char *)&Cluster, sizeof(char) * 4096);
-		fin.seekg(0);
+		/*fin.seekg(0);
 		string buf;
 		char temp;
 		while (fin >> std::noskipws >> temp)
@@ -270,7 +270,8 @@ pair<bool, uint64_t> Volume::GetDataFromFile(File &f, string path)
 			Cluster[i] = f.getD()[i];
 
 		// ket thuc nen
-		uint32_t ByteCount = f.getD().length();
+		*/
+		uint32_t ByteCount = fin.gcount();
 		Size += ByteCount;
 		if (ByteCount < 4096)
 			fill(Cluster + ByteCount, Cluster + 4096, 0);
